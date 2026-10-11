@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from central_db import (
     get_superadmin, list_clients, get_client_by_id, create_client,
     set_client_status, set_client_plan, extend_license, regenerate_license_key,
-    license_state,
+    delete_client, license_state,
 )
 from config import PLANS
 from db import get_conn, utcnow
@@ -164,3 +164,17 @@ def regen_key(r: Request, client_id: int):
         return x
     regenerate_license_key(client_id)
     return RedirectResponse(f"/admin/clients/{client_id}?msg=License+key+regenerated", 303)
+
+
+@router.post("/clients/{client_id}/delete")
+def delete(r: Request, client_id: int, confirm: str = Form("")):
+    if (x := guard_superadmin(r)):
+        return x
+    if confirm != "DELETE":
+        return RedirectResponse(f"/admin/clients/{client_id}?msg=Delete+cancelled", 303)
+    client = get_client_by_id(client_id)
+    if not client:
+        return RedirectResponse("/admin?msg=Client+not+found", 303)
+    name = client["company_name"]
+    delete_client(client_id)
+    return RedirectResponse(f"/admin?msg=Client+{name.replace(' ', '+')}+deleted", 303)
