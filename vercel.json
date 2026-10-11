@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "builds": [
+    {
+      "src": "main.py",
+      "use": "@vercel/python",
+      "config": {
+        "includeFiles": ["templates/**", "static/**", "schema.sql"],
+        "maxLambdaSize": "25mb"
+      }
+    }
+  ],
+  "routes": [
+    { "src": "/static/(.*)", "dest": "main.py" },
+    { "src": "/(.*)", "dest": "main.py" }
+  ]
+}
