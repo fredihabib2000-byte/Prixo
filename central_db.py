@@ -52,6 +52,11 @@ def list_clients():
         return conn.execute("SELECT * FROM clients ORDER BY id DESC").fetchall()
 
 
+def delete_client(client_id):
+    with get_conn() as conn:
+        conn.execute("DELETE FROM clients WHERE id=%s", (client_id,))
+
+
 def set_client_status(client_id, status):
     with get_conn() as conn:
         conn.execute("UPDATE clients SET status=%s WHERE id=%s", (status, client_id))
