@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owner console — PRIXO</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="brand"><span class="brand-mark">P</span><span class="brand-name">PRIXO</span></div>
+    <h1>Owner console</h1>
+    <div class="sub">License &amp; client management</div>
+    {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
+    <form method="post" action="/admin/login">
+      <div class="field"><label>Username</label><input type="text" name="username" required autocapitalize="off"></div>
+      <div class="field"><label>Password</label><input type="password" name="password" required></div>
+      <button type="submit">Sign in</button>
+    </form>
+    <div class="demo-hint">Default: owner / changeme123 — change this in production.</div>
+  </div>
+</div>
+</body>
+</html>

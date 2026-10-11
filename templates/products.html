@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Products — PRIXO{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>Products</h1><p>Catalog synced to your electronic shelf labels.</p></div>
+</div>
+
+{% if limit_hit %}
+<div class="limit-notice">You've reached your plan's product limit ({{ limit }}). Upgrade your plan to add more.</div>
+{% endif %}
+
+<div class="panel">
+  <h2>Add a product</h2>
+  <form method="post" action="/products">
+    <div class="form-row">
+      <div class="field"><label>SKU</label><input type="text" name="sku" required></div>
+      <div class="field"><label>Barcode</label><input type="text" name="barcode"></div>
+      <div class="field"><label>Name</label><input type="text" name="name" required></div>
+      <div class="field"><label>Category</label><input type="text" name="category"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Price</label><input type="number" step="0.01" name="price" required></div>
+      <div class="field"><label>Promo price</label><input type="number" step="0.01" name="promo_price"></div>
+      <div class="field">
+        <label>Store</label>
+        <select name="store_id">
+          {% for s in stores %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <button type="submit" {{ 'disabled' if limit_hit else '' }}>Add product</button>
+  </form>
+</div>
+
+<div class="panel">
+  <h2>CSV import</h2>
+  <p style="color:var(--muted);font-size:12.5px;margin-top:-6px;">Columns: sku, barcode, name, category, price, promo_price</p>
+  <form method="post" action="/import" enctype="multipart/form-data" class="inline-form">
+    <input type="file" name="file" accept=".csv" required>
+    <button type="submit">Import CSV</button>
+  </form>
+</div>
+
+<div class="panel">
+  <h2>Catalog ({{ products|length }})</h2>
+  <div class="search-bar">
+    <form method="get" action="/products">
+      <input type="text" name="q" value="{{ q }}" placeholder="Search SKU, barcode or name…">
+    </form>
+  </div>
+  {% if products %}
+  <table>
+    <thead><tr><th>SKU</th><th>Name</th><th>Category</th><th>Store</th><th>Price</th><th>Promo</th><th>Update price</th></tr></thead>
+    <tbody>
+    {% for p in products %}
+      <tr>
+        <td class="mono-cell">{{ p.sku }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.category or '—' }}</td>
+        <td>{{ p.store_name or '—' }}</td>
+        <td class="mono-cell">${{ '%.2f'|format(p.price) }}</td>
+        <td class="mono-cell">{{ '$%.2f'|format(p.promo_price) if p.promo_price is not none else '—' }}</td>
+        <td>
+          <form class="inline-form" method="post" action="/products/{{ p.sku }}/price">
+            <input type="number" step="0.01" name="price" value="{{ p.price }}" style="width:90px;">
+            <button type="submit" class="btn-sm">Push</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state"><div class="glyph">◌</div>No products yet — add one above or import a CSV.</div>
+  {% endif %}
+</div>
+{% endblock %}

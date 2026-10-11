@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Gateways — PRIXO{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>Gateways</h1><p>Hardware bridges that push updates to your ESL labels.</p></div>
+</div>
+
+<div class="panel">
+  <h2>Add a gateway</h2>
+  <form method="post" action="/gateways">
+    <div class="form-row">
+      <div class="field"><label>Gateway ID</label><input type="text" name="gateway_id" required placeholder="gateway-1"></div>
+      <div class="field"><label>Model</label><input type="text" name="model"></div>
+      <div class="field"><label>IP address</label><input type="text" name="ip_address" placeholder="192.168.1.10"></div>
+      <div class="field">
+        <label>Store</label>
+        <select name="store_id">{% for s in stores %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select>
+      </div>
+    </div>
+    <button type="submit">Add gateway</button>
+  </form>
+</div>
+
+<div class="panel">
+  <h2>Gateways ({{ gateways|length }})</h2>
+  {% if gateways %}
+  <table>
+    <thead><tr><th>Gateway ID</th><th>Model</th><th>IP address</th><th>Store</th><th>Status</th><th>Last seen</th></tr></thead>
+    <tbody>
+    {% for g in gateways %}
+      <tr>
+        <td class="mono-cell">{{ g.gateway_id }}</td>
+        <td>{{ g.model or '—' }}</td>
+        <td class="mono-cell">{{ g.ip_address or '—' }}</td>
+        <td>{{ g.store_name or '—' }}</td>
+        <td><span class="badge {{ g.status }}">{{ g.status }}</span></td>
+        <td class="mono-cell" style="color:var(--muted);">{{ g.last_seen|dt }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state"><div class="glyph">◌</div>No gateways yet — add the bridge hardware for your store.</div>
+  {% endif %}
+</div>
+{% endblock %}

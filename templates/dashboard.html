@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — PRIXO{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Live overview of your shelf-edge network.</p>
+  </div>
+  <span class="plan-pill">{{ plan_label }} plan</span>
+</div>
+
+<div class="stat-grid">
+  <div class="eink-card"><div class="eink-value">{{ stats.products }}</div><div class="eink-label">Products</div></div>
+  <div class="eink-card"><div class="eink-value">{{ stats.labels }}</div><div class="eink-label">ESL Labels</div></div>
+  <div class="eink-card"><div class="eink-value">{{ stats.online }}</div><div class="eink-label">Online</div></div>
+  <div class="eink-card dim"><div class="eink-value">{{ stats.offline }}</div><div class="eink-label">Offline</div></div>
+  <div class="eink-card"><div class="eink-value">{{ stats.gateways }}</div><div class="eink-label">Gateways</div></div>
+  <div class="eink-card"><div class="eink-value">{{ stats.stores }}</div><div class="eink-label">Stores</div></div>
+</div>
+
+<div class="panel">
+  <h2>Recent price pushes</h2>
+  {% if recent %}
+  <table>
+    <thead><tr><th>SKU</th><th>Product</th><th>Old price</th><th>New price</th><th>Label</th><th>Status</th><th>When</th></tr></thead>
+    <tbody>
+    {% for u in recent %}
+      <tr>
+        <td class="mono-cell">{{ u.sku }}</td>
+        <td>{{ u.name or '—' }}</td>
+        <td class="mono-cell">${{ '%.2f'|format(u.old_price) if u.old_price is not none else '—' }}</td>
+        <td class="mono-cell">${{ '%.2f'|format(u.new_price) }}</td>
+        <td class="mono-cell">{{ u.label_id }}</td>
+        <td><span class="badge {{ u.status }}">{{ u.status }}</span></td>
+        <td class="mono-cell" style="color:var(--muted);">{{ u.created_at|dt }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state"><div class="glyph">◌</div>No price pushes yet — update a product's price to see activity here.</div>
+  {% endif %}
+</div>
+{% endblock %}

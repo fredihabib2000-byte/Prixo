@@ -1,0 +1,7 @@
+www.prixo.com {
+    reverse_proxy prixo:8000
+}
+
+prixo.com {
+    redir https://www.prixo.com{uri}
+}

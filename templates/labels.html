@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}ESL Labels — PRIXO{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>ESL Labels</h1><p>Register and assign electronic shelf labels.</p></div>
+</div>
+
+{% if limit_hit %}
+<div class="limit-notice">You've reached your plan's label limit ({{ limit }}). Upgrade your plan to register more.</div>
+{% endif %}
+
+<div class="panel">
+  <h2>Register a label</h2>
+  <form method="post" action="/labels">
+    <div class="form-row">
+      <div class="field"><label>Label ID</label><input type="text" name="label_id" required placeholder="LBL-0001"></div>
+      <div class="field"><label>Model</label><input type="text" name="model" value="2.66in"></div>
+      <div class="field"><label>Gateway ID</label><input type="text" name="gateway_id" value="gateway-1"></div>
+      <div class="field"><label>Battery %</label><input type="number" name="battery" value="100" min="0" max="100"></div>
+    </div>
+    <button type="submit" {{ 'disabled' if limit_hit else '' }}>Register label</button>
+  </form>
+</div>
+
+<div class="panel">
+  <h2>Assign label to product</h2>
+  <form method="post" action="/labels/assign" class="inline-form">
+    <input type="text" name="label_id" placeholder="Label ID" required>
+    <input type="text" name="sku" placeholder="Product SKU" required>
+    <button type="submit">Assign</button>
+  </form>
+</div>
+
+<div class="panel">
+  <h2>Labels ({{ labels|length }})</h2>
+  {% if labels %}
+  <table>
+    <thead><tr><th>Label ID</th><th>Model</th><th>Gateway</th><th>Assigned SKU</th><th>Price shown</th><th>Battery</th><th>Status</th><th>Last update</th></tr></thead>
+    <tbody>
+    {% for l in labels %}
+      <tr>
+        <td class="mono-cell">{{ l.label_id }}</td>
+        <td>{{ l.model }}</td>
+        <td class="mono-cell">{{ l.gateway_id }}</td>
+        <td class="mono-cell">{{ l.sku or '—' }}</td>
+        <td class="mono-cell">{{ '$%.2f'|format(l.price) if l.price is not none else '—' }}</td>
+        <td>
+          <span class="bar"><span class="bar-fill {{ 'low' if l.battery < 20 else '' }}" style="width:{{ l.battery }}%;"></span></span>
+          <span class="mono-cell" style="font-size:11px;color:var(--muted);">{{ l.battery }}%</span>
+        </td>
+        <td><span class="badge {{ l.status }}">{{ l.status }}</span></td>
+        <td class="mono-cell" style="color:var(--muted);">{{ l.last_update|dt }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state"><div class="glyph">◌</div>No labels registered yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

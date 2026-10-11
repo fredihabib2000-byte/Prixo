@@ -1,0 +1,38 @@
+{% extends "admin_base.html" %}
+{% block title %}Clients — PRIXO owner console{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>Clients</h1><p>Every supermarket account and its license status.</p></div>
+  <a href="/admin/clients/new" class="btn">+ New client</a>
+</div>
+
+<div class="stat-grid">
+  <div class="eink-card"><div class="eink-value">{{ total }}</div><div class="eink-label">Total clients</div></div>
+  <div class="eink-card"><div class="eink-value">{{ active_count }}</div><div class="eink-label">Active</div></div>
+  <div class="eink-card dim"><div class="eink-value">{{ expiring_count }}</div><div class="eink-label">Expiring &lt; 7 days</div></div>
+  <div class="eink-card dim"><div class="eink-value">{{ inactive_count }}</div><div class="eink-label">Expired / suspended</div></div>
+</div>
+
+<div class="panel">
+  {% if clients %}
+  <table>
+    <thead><tr><th>Company</th><th>Code</th><th>Plan</th><th>Status</th><th>Expires</th><th>License key</th><th></th></tr></thead>
+    <tbody>
+    {% for c in clients %}
+      <tr>
+        <td>{{ c.company_name }}<div style="color:var(--muted);font-size:11.5px;">{{ c.city or '' }}</div></td>
+        <td class="mono-cell">{{ c.slug }}</td>
+        <td><span class="plan-pill">{{ c.plan }}</span></td>
+        <td><span class="badge {{ c.computed_state }}">{{ c.computed_state }}</span></td>
+        <td class="mono-cell" style="color:var(--muted);">{{ c.expires_at|ddate }}</td>
+        <td class="mono-cell" style="font-size:11px;">{{ c.license_key }}</td>
+        <td><a href="/admin/clients/{{ c.id }}" class="btn btn-sm btn-secondary">Manage</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state"><div class="glyph">◌</div>No clients yet — create your first supermarket account.</div>
+  {% endif %}
+</div>
+{% endblock %}

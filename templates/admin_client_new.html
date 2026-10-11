@@ -1,0 +1,29 @@
+{% extends "admin_base.html" %}
+{% block title %}New client — PRIXO owner console{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>New client</h1><p>Provision a new supermarket account with its own database and login.</p></div></div>
+
+<div class="panel" style="max-width:560px;">
+  <form method="post" action="/admin/clients/new">
+    <div class="field"><label>Company name</label><input type="text" name="company_name" required placeholder="Green Mart"></div>
+    <div class="form-row">
+      <div class="field"><label>City</label><input type="text" name="city"></div>
+      <div class="field"><label>Plan</label>
+        <select name="plan">
+          {% for key, p in plans.items() %}<option value="{{ key }}">{{ p.label }} — {{ p.price_display }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Contact email</label><input type="email" name="contact_email"></div>
+      <div class="field"><label>Contact phone</label><input type="text" name="contact_phone"></div>
+    </div>
+    <div class="field"><label>Initial license length (days)</label><input type="number" name="trial_days" value="365"></div>
+    <div class="form-row">
+      <div class="field"><label>Admin username</label><input type="text" name="admin_username" value="admin" required></div>
+      <div class="field"><label>Admin password</label><input type="text" name="admin_password" value="{{ suggested_password }}" required></div>
+    </div>
+    <button type="submit">Create client &amp; database</button>
+  </form>
+</div>
+{% endblock %}

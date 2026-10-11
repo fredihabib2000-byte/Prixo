@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Stores — PRIXO{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>Stores</h1><p>Branches under your PRIXO account.</p></div>
+</div>
+
+{% if limit_hit %}
+<div class="limit-notice">You've reached your plan's store limit ({{ limit }}). Upgrade your plan to add more branches.</div>
+{% endif %}
+
+<div class="panel">
+  <h2>Add a store</h2>
+  <form method="post" action="/stores">
+    <div class="form-row">
+      <div class="field"><label>Name</label><input type="text" name="name" required></div>
+      <div class="field"><label>City</label><input type="text" name="city"></div>
+    </div>
+    <button type="submit" {{ 'disabled' if limit_hit else '' }}>Add store</button>
+  </form>
+</div>
+
+<div class="panel">
+  <h2>Stores ({{ stores|length }})</h2>
+  {% if stores %}
+  <table>
+    <thead><tr><th>Name</th><th>City</th><th>Status</th><th>Products</th></tr></thead>
+    <tbody>
+    {% for s in stores %}
+      <tr>
+        <td>{{ s.name }}</td>
+        <td>{{ s.city or '—' }}</td>
+        <td><span class="badge {{ s.status }}">{{ s.status }}</span></td>
+        <td class="mono-cell">{{ s.product_count }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state"><div class="glyph">◌</div>No stores yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

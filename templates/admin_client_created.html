@@ -1,0 +1,18 @@
+{% extends "admin_base.html" %}
+{% block title %}Client created — PRIXO owner console{% endblock %}
+{% block content %}
+<div class="page-header"><div><h1>{{ client.company_name }} is live</h1><p>Send these details to your customer — they won't be shown again in full.</p></div></div>
+
+<div class="panel" style="max-width:520px;">
+  <table>
+    <tr><td style="color:var(--muted);">Login page</td><td class="mono-cell">/login</td></tr>
+    <tr><td style="color:var(--muted);">Company code</td><td class="mono-cell">{{ client.slug }}</td></tr>
+    <tr><td style="color:var(--muted);">Username</td><td class="mono-cell">{{ admin_username }}</td></tr>
+    <tr><td style="color:var(--muted);">Password</td><td class="mono-cell">{{ admin_password }}</td></tr>
+    <tr><td style="color:var(--muted);">Plan</td><td><span class="plan-pill">{{ client.plan }}</span></td></tr>
+    <tr><td style="color:var(--muted);">License key</td><td class="mono-cell">{{ client.license_key }}</td></tr>
+    <tr><td style="color:var(--muted);">Expires</td><td class="mono-cell">{{ client.expires_at|ddate }}</td></tr>
+  </table>
+</div>
+<a href="/admin/clients/{{ client.id }}" class="btn">Go to client management</a>
+{% endblock %}

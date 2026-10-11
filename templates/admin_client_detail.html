@@ -1,0 +1,70 @@
+{% extends "admin_base.html" %}
+{% block title %}{{ client.company_name }} — PRIXO owner console{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>{{ client.company_name }}</h1><p class="mono">{{ client.slug }} &middot; created {{ client.created_at|ddate }}</p></div>
+  <span class="badge {{ state }}">{{ state }}</span>
+</div>
+
+<div class="stat-grid">
+  <div class="eink-card"><div class="eink-value">{{ usage.products }}</div><div class="eink-label">Products{% if limits.max_products %} / {{ limits.max_products }}{% endif %}</div></div>
+  <div class="eink-card"><div class="eink-value">{{ usage.labels }}</div><div class="eink-label">Labels{% if limits.max_labels %} / {{ limits.max_labels }}{% endif %}</div></div>
+  <div class="eink-card"><div class="eink-value">{{ usage.stores }}</div><div class="eink-label">Stores{% if limits.max_stores %} / {{ limits.max_stores }}{% endif %}</div></div>
+  <div class="eink-card"><div class="eink-value">{{ usage.users }}</div><div class="eink-label">Users{% if limits.max_users %} / {{ limits.max_users }}{% endif %}</div></div>
+</div>
+
+<div class="panel" style="max-width:560px;">
+  <h2>License</h2>
+  <table style="margin-bottom:16px;">
+    <tr><td style="color:var(--muted);">License key</td><td class="mono-cell">{{ client.license_key }}</td></tr>
+    <tr><td style="color:var(--muted);">Plan</td><td><span class="plan-pill">{{ client.plan }}</span></td></tr>
+    <tr><td style="color:var(--muted);">Status</td><td><span class="badge {{ client.status }}">{{ client.status }}</span></td></tr>
+    <tr><td style="color:var(--muted);">Expires</td><td class="mono-cell">{{ client.expires_at|ddate }}</td></tr>
+    <tr><td style="color:var(--muted);">Contact</td><td>{{ client.contact_email or '—' }} &middot; {{ client.contact_phone or '—' }}</td></tr>
+  </table>
+
+  <div class="form-row">
+    <form method="post" action="/admin/clients/{{ client.id }}/renew" class="field">
+      <label>Extend license (days)</label>
+      <div class="inline-form"><input type="number" name="days" value="365"><button type="submit" class="btn-sm">Renew</button></div>
+    </form>
+    <form method="post" action="/admin/clients/{{ client.id }}/plan" class="field">
+      <label>Change plan</label>
+      <div class="inline-form">
+        <select name="plan">
+          {% for key, p in plans.items() %}<option value="{{ key }}" {{ 'selected' if key==client.plan else '' }}>{{ p.label }}</option>{% endfor %}
+        </select>
+        <button type="submit" class="btn-sm">Update</button>
+      </div>
+    </form>
+  </div>
+
+  <div style="display:flex;gap:10px;margin-top:16px;">
+    {% if client.status == 'active' %}
+      <form method="post" action="/admin/clients/{{ client.id }}/suspend"><button type="submit" class="btn-danger btn-sm">Suspend access</button></form>
+    {% else %}
+      <form method="post" action="/admin/clients/{{ client.id }}/activate"><button type="submit" class="btn-sm">Reactivate</button></form>
+    {% endif %}
+    <form method="post" action="/admin/clients/{{ client.id }}/regenerate-key"><button type="submit" class="btn-secondary btn-sm">Regenerate license key</button></form>
+  </div>
+</div>
+
+<div class="panel" style="max-width:560px;margin-top:20px;">
+  <h2>Users</h2>
+  <p style="color:var(--muted);margin-top:-6px;margin-bottom:14px;">If a customer forgets their password, set a new one here and send it to them.</p>
+  <table style="margin-bottom:6px;">
+    {% for u in users %}
+    <tr>
+      <td style="color:var(--muted);">{{ u.username }}</td>
+      <td><span class="plan-pill">{{ u.role }}</span></td>
+      <td>
+        <form method="post" action="/admin/clients/{{ client.id }}/users/{{ u.id }}/reset-password" class="inline-form">
+          <input type="text" name="new_password" placeholder="New password" required minlength="6">
+          <button type="submit" class="btn-sm">Reset password</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

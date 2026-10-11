@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>License inactive — PRIXO</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="license-block">
+    <div class="code">LICENSE {{ state|upper }}</div>
+    <h1 style="font-size:20px;">Your PRIXO license is {{ state }}</h1>
+    <p style="color:var(--muted);font-size:13.5px;margin-top:8px;">
+      {% if state == 'expired' %}
+        The subscription for <strong>{{ company_name }}</strong> expired on {{ expires_at }}. Renew to restore access to your dashboard, product catalog and ESL labels.
+      {% else %}
+        Access for <strong>{{ company_name }}</strong> has been suspended. Contact PRIXO support to reactivate your account.
+      {% endif %}
+    </p>
+    <div style="margin-top:22px;"><a href="/logout" class="btn btn-secondary">Log out</a></div>
+  </div>
+</div>
+</body>
+</html>
